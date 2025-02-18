@@ -43,10 +43,12 @@ def daily_paper_trading():
         print(f"Volatility: {std}")
         upper_band = current_btc_price + 5 * std
         lower_band = current_btc_price - std
-        print(f"Upper band: {upper_band}")
-        print(f"Lower band: {lower_band}")
 
-        if lower_band <= current_btc_price <= upper_band:
+        total_positions = 0
+        for key, position in open_position.items():
+            total_positions += len(position)
+
+        if total_positions <= 10 and lower_band <= current_btc_price <= upper_band:
             print(f"Position Taken: {current_btc_price}")
             key = lower_band, upper_band
             if key not in open_position:
@@ -68,10 +70,10 @@ def daily_paper_trading():
             elif current_btc_price <= lb - 8 * std:
                 for i in position:
                     print(f"Position Closed: {i}")
-                    print(f"Loss: {current_btc_price - i}")
+                    print(f"Loss: {lb - 8 * std - i}")
                     with open("bitcoin_tracking.txt", "a") as file:
                         file.write(f"{key}: {i} at {datetime.now()}\n")
-                        file.write(f"Loss: {current_btc_price - i}\n")
+                        file.write(f"Loss: {lb - 8 * std - i}\n")
                 open_position[key] = []
     
         time.sleep(3600)

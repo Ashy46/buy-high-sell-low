@@ -69,10 +69,10 @@ def hourly_paper_trading():
             elif current_sol_price <= lb - 8 * std:
                 for i in position:
                     print(f"Position Closed: {i}")
-                    print(f"Loss: {i - lb}")
+                    print(f"Loss: {lb + 8 * std - i}")
                     with open("sol_tracking.txt", "a") as file:
                         file.write(f"Position Closed: {i} at {datetime.now()}\n")
-                        file.write(f"Loss: {i - lb}\n")
+                        file.write(f"Loss: {lb + 8 * std - i}\n")
                 open_position[key] = []
 
         time.sleep(60)
