@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import time
+import asyncio
 
 def fetch_current_sol_price():
     url = "https://data-api.cryptocompare.com/spot/v1/latest/tick?market=coinbase&instruments=SOL-USD&apply_mapping=true"
@@ -32,8 +33,7 @@ def calculate_volatility():
     df = past_60_mintues_sol()
     std = np.std(df['Open'])
     return std
-
-def hourly_paper_trading():
+async def hourly_paper_trading():
     open_position = {}
     
     while True:
@@ -53,7 +53,7 @@ def hourly_paper_trading():
             if key not in open_position:
                 open_position[key] = []
             open_position[key].append(current_sol_price)
-            with open("sol_tracking.txt", "a") as file:
+            with open("volatitlityTrading1hour/sol_tracking.txt", "a") as file:
                 file.write(f"{key}: {current_sol_price} at {datetime.now()}\n")
 
         for key, position in open_position.items():
@@ -75,7 +75,6 @@ def hourly_paper_trading():
                         file.write(f"Loss: {lb + 8 * std - i}\n")
                 open_position[key] = []
 
-        time.sleep(60)
-
+        await asyncio.sleep(60)
 
 hourly_paper_trading()

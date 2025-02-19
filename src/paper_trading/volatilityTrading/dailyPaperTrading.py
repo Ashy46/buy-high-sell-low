@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime, timedelta
 import time
 import schedule
+import asyncio
 
 def fetch_current_btc_price():
     url = "https://data-api.cryptocompare.com/spot/v1/latest/tick?market=coinbase&instruments=BTC-USD&apply_mapping=true"
@@ -33,7 +34,7 @@ def calculate_volatility():
     std = np.std(df['Open'])
     return std
 
-def daily_paper_trading():
+async def daily_paper_trading():
     open_position = {}
 
     while True:
@@ -54,7 +55,7 @@ def daily_paper_trading():
             if key not in open_position:
                 open_position[key] = []
             open_position[key].append(current_btc_price)
-            with open("bitcoin_tracking.txt", "a") as file:
+            with open("volatilityTrading/bitcoin_tracking.txt", "a") as file:
                 file.write(f"{key}: {current_btc_price} at {datetime.now()}\n")
         
         for key, position in open_position.items():
@@ -63,7 +64,7 @@ def daily_paper_trading():
                 for i in position:
                     print(f"Position Closed: {i}")
                     print(f"Profit: {i - current_btc_price}")
-                    with open("bitcoin_tracking.txt", "a") as file:
+                    with open("volatilityTrading/bitcoin_tracking.txt", "a") as file:
                         file.write(f"{key}: {i} at {datetime.now()}\n")
                         file.write(f"Profit: {i - current_btc_price}\n")
                 open_position[key] = []
@@ -76,7 +77,7 @@ def daily_paper_trading():
                         file.write(f"Loss: {lb - 8 * std - i}\n")
                 open_position[key] = []
     
-        time.sleep(3600)
+        await asyncio.sleep(3600)
 
 daily_paper_trading()
 
